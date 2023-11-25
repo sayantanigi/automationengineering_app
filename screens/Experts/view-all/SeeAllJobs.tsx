@@ -1,5 +1,5 @@
 import { AntDesign, Fontisto, Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Image, SafeAreaView, ScrollView, View, Text, TouchableOpacity, Pressable, Alert, Platform } from 'react-native'
 import { StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -8,182 +8,134 @@ import { Checkbox, Searchbar } from 'react-native-paper';
 import RNLinearGradient from '../../../components/RNLinearGradient';
 import ExpertLayout from '../ExpertLayout';
 import TouchableRipple from "../../../components/TouchableRipple";
+import { BidList, SearchList } from '../../../Network/HomeListApi';
+import { useSearchList } from '../../../Network/APIService';
+
+export interface SearchBody {
+    category_id:     string;
+    title_keyword:   string;
+    post_id:         string;
+    days:            string;
+    subcategory_id:  string;
+    location:        string;
+    country:         string;
+    state:           string;
+    city:            string;
+    search_title:    string;
+    search_location: string;
+}
 
 export default function SeeAllJobs() {
     const Navigation = useNavigation<any>()
     const [searchQuery, setSearchQuery] = React.useState('');
     const [checked, setChecked] = React.useState(false);
+    const [getsearchlist, setSearchlist] = useState(Array<SearchList>());
+    const [getsearchBody, setSearchbody] =  useState<SearchBody | null>(null)
     const platform = Platform.OS
     const onChangeSearch = (query: React.SetStateAction<string>) => setSearchQuery(query);
     const [modalVisible, setModalVisible] = useState(false);
-  
-    function gotojobdetails() {
-        Navigation.navigate('ExpertsOpportunitiesDetails')
-    }
-    return (
+    
 
-        <ExpertLayout title="All Opportunities" isChildren={true}>
-                <View style={styles.fullsectionjoblisst}>
-                    <View style={styles.jobslistcard}>
-                        <View style={styles.padf}>
-                            <View style={styles.serviceflex}>
-                                    <Image source={require('../../../assets/images/cm1.jpg')} style={styles.cardxi} />
-                                <View style={styles.textsr}>
-                                    <Text style={styles.headingjobs} numberOfLines={4}>
-                                        Software Development Engineer  Software Development Engineer Software Development Engineers
-                                    </Text>
-                                 
-                                    <Text style={styles.parasded}>
-                                        Web Development / .NET
-                                    </Text>
-                                    <View style={styles.listinfo}>
-                                        <Ionicons name="location" style={styles.icmsection} />
-                                        <Text style={styles.listlcv}>
-                                            Kolkata, West Bengal, India
-                                        </Text>
-                                    </View>
-                                </View>
-                            </View>
-                            <View style={styles.webn}>
-                                
-                                <Text style={styles.jobdis}>
-                                    We need someone to build for us offline POS software. It
-                                    should be white marked and should be able to be
-                                    customized for our different clients. It should be for multi
-                                    usable, like for retails/super shops, etc.
-                                </Text>
-                               
-                                 <TouchableRipple  style={styles.wdtbtn} onPress={gotojobdetails}>
-                                    <RNLinearGradient
-                                        direction="column"
-                                        style={styles.linearGradient}
-                                        colors={['hsl(222, 83%, 32%)', 'hsl(223, 86%, 65%)']} >
-                                       <Text style={styles.buttontext} >Bid Now</Text>
-                                    </RNLinearGradient>
-                                </TouchableRipple>
-                            </View>
-                        </View>
-                    </View>
+    const myJsonObject: SearchBody = {
+        category_id:     "",
+        title_keyword:   "",
+        post_id:         "",
+        days:            "",
+        subcategory_id:  "",
+        location:        "",
+        country:         "",
+        state:          "",
+        city:            "",
+        search_title:    "",
+        search_location: "",
+      };
 
-                    <View style={styles.jobslistcard}>
-                        <View style={styles.padf}>
-                            <View style={styles.serviceflex}>
-                                <Image source={require('../../../assets/images/cm2.jpg')} style={styles.cardxi} />
-                                <View style={styles.textsr}>
-                                    <Text style={styles.headingjobs} numberOfLines={1}>
-                                        Software Development Engineer  Software Development Engineer Software Development Engineers
-                                    </Text>
-                                 
-
-                                    <Text style={styles.parasded}>
-                                        Web Development / .NET
-                                    </Text>
-                                    <View style={styles.listinfo}>
-                                        <Ionicons name="location" style={styles.icmsection} />
-                                        <Text style={styles.listlcv}>
-                                            Kolkata, West Bengal, India
-                                        </Text>
-                                    </View>
-                                </View>
-                            </View>
-                            <View style={styles.webn}>
-                                <Text style={styles.jobdis}>
-                                    We need someone to build for us offline POS software. It
-                                    should be white marked and should be able to be
-                                    customized for our different clients. It should be for multi
-                                    usable, like for retails/super shops, etc.
-                                </Text>
-                                <TouchableRipple style={styles.wdtbtn} onPress={gotojobdetails}>
-                                    <RNLinearGradient
-                                        direction="column"
-                                        style={styles.linearGradient}
-                                        colors={['hsl(222, 83%, 32%)', 'hsl(223, 86%, 65%)']} >
-                                        <Text style={styles.buttontext} >Bid Now</Text>
-                                    </RNLinearGradient>
-                                </TouchableRipple>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={styles.jobslistcard}>
-                        <View style={styles.padf}>
-                            <View style={styles.serviceflex}>
-                                <Image source={require('../../../assets/images/cm2.jpg')} style={styles.cardxi} />
-                                <View style={styles.textsr}>
-                                    <Text style={styles.headingjobs} numberOfLines={1}>
-                                        Software Development Engineer  Software Development Engineer Software Development Engineers
-                                    </Text>
-                                 
-                                    <Text style={styles.parasded}>
-                                        Web Development / .NET
-                                    </Text>
-                                    <View style={styles.listinfo}>
-                                        <Ionicons name="location" style={styles.icmsection} />
-                                        <Text style={styles.listlcv}>
-                                            Kolkata, West Bengal, India
-                                        </Text>
-                                    </View>
-                                </View>
-                            </View>
-                            <View style={styles.webn}>
-                                <Text style={styles.jobdis}>
-                                    We need someone to build for us offline POS software. It
-                                    should be white marked and should be able to be
-                                    customized for our different clients. It should be for multi
-                                    usable, like for retails/super shops, etc.
-                                </Text>
-                                <TouchableRipple style={styles.wdtbtn} onPress={gotojobdetails}>
-                                    <RNLinearGradient
-                                        direction="column"
-                                        style={styles.linearGradient}
-                                        colors={['hsl(222, 83%, 32%)', 'hsl(223, 86%, 65%)']} >
-                                        <Text style={styles.buttontext} >Bid Now</Text>
-                                    </RNLinearGradient>
-                                </TouchableRipple>
-                            </View>
-                        </View>
-                    </View>
-                    <View style={styles.jobslistcard}>
-                        <View style={styles.padf}>
-                            <View style={styles.serviceflex}>
-                                <Image source={require('../../../assets/images/cm2.jpg')} style={styles.cardxi} />
-                                <View style={styles.textsr}>
-                                    <Text style={styles.headingjobs} numberOfLines={1}>
-                                        Software Development Engineer  Software Development Engineer Software Development Engineers
-                                    </Text>
-                                
-
-                                    <Text style={styles.parasded}>
-                                        Web Development / .NET
-                                    </Text>
-                                    <View style={styles.listinfo}>
-                                        <Ionicons name="location" style={styles.icmsection} />
-                                        <Text style={styles.listlcv}>
-                                            Kolkata, West Bengal, India
-                                        </Text>
-                                    </View>
-                                </View>
-                            </View>
-                            <View style={styles.webn}>
-                                <Text style={styles.jobdis}>
-                                    We need someone to build for us offline POS software. It
-                                    should be white marked and should be able to be
-                                    customized for our different clients. It should be for multi
-                                    usable, like for retails/super shops, etc.
-                                </Text>
-                                <TouchableRipple style={styles.wdtbtn} onPress={gotojobdetails}>
-                                    <RNLinearGradient
-                                        direction="column"
-                                        style={styles.linearGradient}
-                                        colors={['hsl(222, 83%, 32%)', 'hsl(223, 86%, 65%)']} >
-                                        <Text style={styles.buttontext} >Bid Now</Text>
-                                    </RNLinearGradient>
-                                </TouchableRipple>
-                            </View>
-                        </View>
-                    </View>
-                </View>
+    useEffect(() => {
          
-{/* Modal view */}
+
+        fetchLetestListing()
+
+
+    }, []);
+
+
+    function gotojobdetails(post_id: any ) {
+        
+        Navigation.navigate('ExpertsOpportunitiesDetails',{post_id})
+    }
+
+    async function fetchLetestListing() {
+
+        
+       // console.log(myJsonObject)
+        let userdata = await useSearchList(JSON.stringify(myJsonObject))
+        console.log(userdata)
+
+        setSearchlist(userdata)
+    }
+
+
+
+    return (
+        <ExpertLayout MessageTextBarHidden title="All Opportunities" isChildren={true} disable={false}>
+
+            <View style={styles.fullsectionjoblisst}>
+
+
+                {
+                    getsearchlist?.map(function (item: SearchList, index: number) {
+                        return (
+                            <View style={styles.jobslistcard}>
+                                <View style={styles.padf}>
+                                    <View style={styles.serviceflex}>
+                                        <Image source={{ uri: item.profilePic }} style={styles.cardxi} />
+                                        <View style={styles.textsr}>
+                                            <Text style={styles.headingjobs} numberOfLines={1}>
+                                                {item.post_title}
+                                            </Text>
+
+
+                                            <Text style={styles.parasded}>
+                                                {item.required_key_skills}
+                                            </Text>
+                                            <View style={styles.listinfo}>
+                                                <Ionicons name="location" style={styles.icmsection} />
+                                                <Text style={styles.listlcv}>
+                                                    {item.location}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </View>
+                                    <View style={styles.webn}>
+                                        <Text style={styles.jobdis}>
+                                            {item.description?.replace(/(<([^>]+)>)/gi, "")}
+                                        </Text>
+                                        <TouchableRipple style={styles.wdtbtn}  onPress={() => gotojobdetails(item.id)}>
+                                            <RNLinearGradient
+                                                direction="column"
+                                                style={styles.linearGradient}
+                                                colors={['hsl(222, 83%, 32%)', 'hsl(223, 86%, 65%)']} >
+                                                <Text style={styles.buttontext} >Bid Now</Text>
+                                            </RNLinearGradient>
+                                        </TouchableRipple>
+                                    </View>
+                                </View>
+                            </View>
+
+                        )
+                    })
+                }
+
+
+
+
+
+
+
+
+            </View>
+
+            {/* Modal view */}
 
             <Modal
                 isVisible={modalVisible}
@@ -195,163 +147,163 @@ export default function SeeAllJobs() {
                         </View>
 
                         <View style={styles.searchbarmessagelist}>
-                        <Searchbar
-                            placeholderTextColor="#D6D6D6"
-                            placeholder="Search keywords"
-                            onChangeText={onChangeSearch}
-                            value={searchQuery}
-                            
-                            style={{
-                                backgroundColor: "#fff",
-                                shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' :  'rgba(0, 0, 2, 0)',
-                                shadowOpacity: 0.8,
-                                shadowOffset: { width: 1, height: 13 },
-                                height:55,
-                                padding:0,
-                            }}
-                            elevation={2}
-                          
-                        />
-                    </View>
+                            <Searchbar
+                                placeholderTextColor="#D6D6D6"
+                                placeholder="Search keywords"
+                                onChangeText={onChangeSearch}
+                                value={searchQuery}
 
-                    {/* Filter body section */}
+                                style={{
+                                    backgroundColor: "#fff",
+                                    shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 2, 0)',
+                                    shadowOpacity: 0.8,
+                                    shadowOffset: { width: 1, height: 13 },
+                                    height: 55,
+                                    padding: 0,
+                                }}
+                                elevation={2}
+
+                            />
+                        </View>
+
+                        {/* Filter body section */}
 
                         <View style={styles.submarinsection}>
 
-                        <View style={styles.catgh}>
-                            <TouchableOpacity activeOpacity={0.9}>
-                            <View style={styles.catagprylistbtnactive} >
-                            <Text>
-                              Category
-                            </Text>
-                            </View>
-                            </TouchableOpacity>
+                            <View style={styles.catgh}>
+                                <TouchableOpacity activeOpacity={0.9}>
+                                    <View style={styles.catagprylistbtnactive} >
+                                        <Text>
+                                            Category
+                                        </Text>
+                                    </View>
+                                </TouchableOpacity>
 
-                             <TouchableOpacity  activeOpacity={0.9}>
-                             <View style={styles.catagprylistbtn}>
-                             <Text>
-                              Country
-                            </Text>
-                            </View>
-                            </TouchableOpacity>
+                                <TouchableOpacity activeOpacity={0.9}>
+                                    <View style={styles.catagprylistbtn}>
+                                        <Text>
+                                            Country
+                                        </Text>
+                                    </View>
+                                </TouchableOpacity>
 
-                            <TouchableOpacity activeOpacity={0.9}>
-                                <View style={styles.catagprylistbtn}>
-                            <Text>
-                            Last activity
-                            </Text>
-                            </View>
-                            </TouchableOpacity>
+                                <TouchableOpacity activeOpacity={0.9}>
+                                    <View style={styles.catagprylistbtn}>
+                                        <Text>
+                                            Last activity
+                                        </Text>
+                                    </View>
+                                </TouchableOpacity>
                             </View>
 
                             <View style={styles.selkl}>
-                            <ScrollView style={styles.opklad} showsVerticalScrollIndicator={false}>
-                               <View style={styles.checkboxContainer}>
-                                <Checkbox
-                                 color="#1B52DF"
-                                    status={checked ? 'checked' : 'unchecked'}
-                                    onPress={() => {
-                                    setChecked(!checked);
-                                    }}
-                                    />
-                                    <Text style={styles.checkboxtext}>Web development</Text>
-                                </View>
-                                <View style={styles.checkboxContainer}>
-                                <Checkbox
-                                 color="#1B52DF"
-                                    status={checked ? 'checked' : 'unchecked'}
-                                    onPress={() => {
-                                    setChecked(!checked);
-                                    }}
-                                    />
-                                    <Text style={styles.checkboxtext}>Ios Development</Text>
-                                </View>
-                                <View style={styles.checkboxContainer}>
-                                <Checkbox
-                                 color="#1B52DF"
-                                    status={checked ? 'checked' : 'unchecked'}
-                                    onPress={() => {
-                                    setChecked(!checked);
-                                    }}
-                                    />
-                                    <Text style={styles.checkboxtext}>Web design</Text>
-                                </View>
-                                <View style={styles.checkboxContainer}>
-                                <Checkbox
-                                 color="#1B52DF"
-                                    status={checked ? 'checked' : 'unchecked'}
-                                    onPress={() => {
-                                    setChecked(!checked);
-                                    }}
-                                    />
-                                    <Text style={styles.checkboxtext}>Mobile development</Text>
-                                </View>
-                                <View style={styles.checkboxContainer}>
-                                <Checkbox
-                                 color="#1B52DF"
-                                    status={checked ? 'checked' : 'unchecked'}
-                                    onPress={() => {
-                                    setChecked(!checked);
-                                    }}
-                                    />
-                                    <Text style={styles.checkboxtext}>.NET</Text>
-                                </View>
-                                <View style={styles.checkboxContainer}>
-                                <Checkbox
-                                 color="#1B52DF"
-                                    status={checked ? 'checked' : 'unchecked'}
-                                    onPress={() => {
-                                    setChecked(!checked);
-                                    }}
-                                    />
-                                    <Text style={styles.checkboxtext}>CRE loaded</Text>
-                                </View>
-                                <View style={styles.checkboxContainer}>
-                                <Checkbox
-                                 color="#1B52DF"
-                                    status={checked ? 'checked' : 'unchecked'}
-                                    onPress={() => {
-                                    setChecked(!checked);
-                                    }}
-                                    />
-                                    <Text style={styles.checkboxtext}>Data integration</Text>
-                                </View>
-                                <View style={styles.checkboxContainer}>
-                                <Checkbox
-                                 color="#1B52DF"
-                                    status={checked ? 'checked' : 'unchecked'}
-                                    onPress={() => {
-                                    setChecked(!checked);
-                                    }}
-                                    />
-                                    <Text style={styles.checkboxtext}>MariaDB</Text>
-                                </View>
-                                <View style={styles.checkboxContainer}>
-                                <Checkbox
-                                    color="#1B52DF"
-                                    status={checked ? 'checked' : 'unchecked'}
-                                    onPress={() => {
-                                    setChecked(!checked);
-                                    }}
-                                 
-                                    />
-                                    <Text style={styles.checkboxtext}>Mobile app testing</Text>
-                                </View>
+                                <ScrollView style={styles.opklad} showsVerticalScrollIndicator={false}>
+                                    <View style={styles.checkboxContainer}>
+                                        <Checkbox
+                                            color="#1B52DF"
+                                            status={checked ? 'checked' : 'unchecked'}
+                                            onPress={() => {
+                                                setChecked(!checked);
+                                            }}
+                                        />
+                                        <Text style={styles.checkboxtext}>Web development</Text>
+                                    </View>
+                                    <View style={styles.checkboxContainer}>
+                                        <Checkbox
+                                            color="#1B52DF"
+                                            status={checked ? 'checked' : 'unchecked'}
+                                            onPress={() => {
+                                                setChecked(!checked);
+                                            }}
+                                        />
+                                        <Text style={styles.checkboxtext}>Ios Development</Text>
+                                    </View>
+                                    <View style={styles.checkboxContainer}>
+                                        <Checkbox
+                                            color="#1B52DF"
+                                            status={checked ? 'checked' : 'unchecked'}
+                                            onPress={() => {
+                                                setChecked(!checked);
+                                            }}
+                                        />
+                                        <Text style={styles.checkboxtext}>Web design</Text>
+                                    </View>
+                                    <View style={styles.checkboxContainer}>
+                                        <Checkbox
+                                            color="#1B52DF"
+                                            status={checked ? 'checked' : 'unchecked'}
+                                            onPress={() => {
+                                                setChecked(!checked);
+                                            }}
+                                        />
+                                        <Text style={styles.checkboxtext}>Mobile development</Text>
+                                    </View>
+                                    <View style={styles.checkboxContainer}>
+                                        <Checkbox
+                                            color="#1B52DF"
+                                            status={checked ? 'checked' : 'unchecked'}
+                                            onPress={() => {
+                                                setChecked(!checked);
+                                            }}
+                                        />
+                                        <Text style={styles.checkboxtext}>.NET</Text>
+                                    </View>
+                                    <View style={styles.checkboxContainer}>
+                                        <Checkbox
+                                            color="#1B52DF"
+                                            status={checked ? 'checked' : 'unchecked'}
+                                            onPress={() => {
+                                                setChecked(!checked);
+                                            }}
+                                        />
+                                        <Text style={styles.checkboxtext}>CRE loaded</Text>
+                                    </View>
+                                    <View style={styles.checkboxContainer}>
+                                        <Checkbox
+                                            color="#1B52DF"
+                                            status={checked ? 'checked' : 'unchecked'}
+                                            onPress={() => {
+                                                setChecked(!checked);
+                                            }}
+                                        />
+                                        <Text style={styles.checkboxtext}>Data integration</Text>
+                                    </View>
+                                    <View style={styles.checkboxContainer}>
+                                        <Checkbox
+                                            color="#1B52DF"
+                                            status={checked ? 'checked' : 'unchecked'}
+                                            onPress={() => {
+                                                setChecked(!checked);
+                                            }}
+                                        />
+                                        <Text style={styles.checkboxtext}>MariaDB</Text>
+                                    </View>
+                                    <View style={styles.checkboxContainer}>
+                                        <Checkbox
+                                            color="#1B52DF"
+                                            status={checked ? 'checked' : 'unchecked'}
+                                            onPress={() => {
+                                                setChecked(!checked);
+                                            }}
+
+                                        />
+                                        <Text style={styles.checkboxtext}>Mobile app testing</Text>
+                                    </View>
                                 </ScrollView>
                             </View>
                         </View>
 
-                    {/*Filter body section end  */}
+                        {/*Filter body section end  */}
 
-                {/* filter bottom section */}
-                    <View style={styles.allbtnsedc}>
-                    <View style={styles.widtg}>
-                        <TouchableOpacity  activeOpacity={0.9}>
-                            <Text style={styles.freelbtn}>Reset All</Text>
-                        </TouchableOpacity>
-                        </View>
-                        <View style={styles.widtg}>
-                        <TouchableRipple>
+                        {/* filter bottom section */}
+                        <View style={styles.allbtnsedc}>
+                            <View style={styles.widtg}>
+                                <TouchableOpacity activeOpacity={0.9}>
+                                    <Text style={styles.freelbtn}>Reset All</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={styles.widtg}>
+                                <TouchableRipple>
                                     <RNLinearGradient
                                         direction="column"
                                         style={styles.linearGradient}
@@ -359,39 +311,42 @@ export default function SeeAllJobs() {
                                         <Text style={styles.buttontext} >Apply </Text>
                                     </RNLinearGradient>
                                 </TouchableRipple>
+                            </View>
+
+                            <View style={styles.widtg}>
+                                <Pressable onPress={() => setModalVisible(!modalVisible)}>
+                                    <View style={styles.linearGradientfiltermodal} >
+                                        <AntDesign name="closecircle" size={22} color="#1B52DF" />
+                                    </View>
+                                </Pressable>
+                            </View>
                         </View>
-                     
-                        <View style={styles.widtg}>
-                        <Pressable  onPress={() => setModalVisible(!modalVisible)}>
-                         <View style={styles.linearGradientfiltermodal} >
-                        <AntDesign name="closecircle" size={22} color="#1B52DF" />
-                         </View>
-                       </Pressable>
-                       </View>
-                       </View>
-                       {/* filter bottom section  End*/}
+                        {/* filter bottom section  End*/}
                     </View>
                 </View>
             </Modal>
-           {/* Modal view */}
-
-           <View style={styles.fixedjobbtn}>
+            {/* Modal view */}
+            <View style={styles.fixedjobbtn}>
                 <Pressable onPress={() => setModalVisible(true)}>
                     <View style={styles.linearGradientfilter} >
                         <Fontisto name="filter" size={22} color="#1B52DF" />
                     </View>
                 </Pressable>
             </View>
-           
-            </ExpertLayout>
-        
+
+
+        </ExpertLayout>
+
     )
+
+
+
 }
 
 
 const styles = StyleSheet.create({
     viewjobs: {
-        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' :  'rgba(0, 0, 2, 0)',
+        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 2, 0)',
         shadowOpacity: 0.8,
         elevation: 4,
         backgroundColor: '#fff',
@@ -408,83 +363,83 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         textTransform: 'capitalize',
     },
-    opklad:{
-        height:Platform.OS === 'android' ? 330 :  260,
-    
+    opklad: {
+        height: Platform.OS === 'android' ? 320 : 260,
+
     },
-    checkboxtext:{
-fontSize:12,
-marginTop:6,
+    checkboxtext: {
+        fontSize: 12,
+        marginTop: 6,
     },
-    selkl:{
-marginLeft:-20,
+    selkl: {
+        marginLeft: -20,
     },
-    submarinsection:{
+    submarinsection: {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'flex-start',
     },
-    catgh:{
-        width:'50%',
+    catgh: {
+        width: '50%',
     },
     checkboxContainer: {
         flexDirection: 'row',
         marginBottom: 10,
-      },
-      checkbox: {
+    },
+    checkbox: {
         alignSelf: 'center',
-      },
-    widtg:{
-width:'38%',
+    },
+    widtg: {
+        width: '38%',
     },
     freelbtn: {
-        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' :  'rgba(0, 0, 2, 0)',
+        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 2, 0)',
         shadowOpacity: 0.8,
         elevation: 4,
-        backgroundColor : '#fff',
-        shadowRadius: 50 ,
-        marginLeft:14,
-        textAlign:'center',
-        marginBottom:0,
+        backgroundColor: '#fff',
+        shadowRadius: 50,
+        marginLeft: 14,
+        textAlign: 'center',
+        marginBottom: 0,
         color: '#C5C5C5',
         fontWeight: '500',
         width: '80%',
-        fontSize:12,
+        fontSize: 12,
         padding: 14,
         borderRadius: 50,
     },
-    catagprylistbtn:{
-        borderWidth:1,
-        borderColor:Platform.OS === 'android' ? '#fff' :  '#ebebeb',
-        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' :  'rgba(0, 0, 2, 0)',
+    catagprylistbtn: {
+        borderWidth: 1,
+        borderColor: Platform.OS === 'android' ? '#fff' : '#ebebeb',
+        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 2, 0)',
         shadowOpacity: 0.8,
         elevation: 4,
-        backgroundColor : '#fff',
+        backgroundColor: '#fff',
         shadowRadius: 10,
-        textAlign:'center',
-        marginBottom:14,
+        textAlign: 'center',
+        marginBottom: 14,
         color: '#C5C5C5',
         fontWeight: '500',
         width: '80%',
-        fontSize:12,
+        fontSize: 12,
         padding: 14,
         borderRadius: 10,
-    
+
     },
-    allbtnsedc:{
+    allbtnsedc: {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'flex-start',
-        position:'absolute',
-        bottom:0,
-        borderTopWidth:1,
-        paddingTop:20,
-        borderTopColor:'#f1f1f1',
+        position: 'absolute',
+        bottom: 0,
+        borderTopWidth: 1,
+        paddingTop: 20,
+        borderTopColor: '#f1f1f1',
     },
-    filterva:{
-      borderBottomColor:'#f1f1f1',
-      borderBottomWidth:1,
-        paddingBottom:14,
+    filterva: {
+        borderBottomColor: '#f1f1f1',
+        borderBottomWidth: 1,
+        paddingBottom: 14,
     },
     buttontext: {
         color: '#fff',
@@ -492,7 +447,7 @@ width:'38%',
         fontWeight: 'bold',
         fontSize: 14,
     },
-    buttontextapply:{
+    buttontextapply: {
         color: '#fff',
         textAlign: 'center',
         fontWeight: 'bold',
@@ -510,18 +465,18 @@ width:'38%',
         fontWeight: "bold",
         width: '100%',
         borderRadius: 50,
-        marginTop: 28,
+        marginTop: 0,
         marginBottom: 20,
         height: 50,
         justifyContent: "center",
         alignItems: "center"
     },
-    wdtbtn:{
-width:'60%',
-marginLeft:'auto',
-marginRight:'auto',
+    wdtbtn: {
+        width: '60%',
+        marginLeft: 'auto',
+        marginRight: 'auto',
     },
-    linearGradientapply:{
+    linearGradientapply: {
         color: '#fff',
         textAlign: 'center',
         fontWeight: "500",
@@ -529,7 +484,7 @@ marginRight:'auto',
         padding: 14,
         borderRadius: 50,
         marginBottom: 20,
-        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' :  'rgba(0, 0, 2, 0)',
+        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 2, 0)',
         shadowOpacity: 1,
         elevation: 10,
     },
@@ -545,22 +500,22 @@ marginRight:'auto',
         backgroundColor: "#fff",
         shadowRadius: 50,
         // shadowColor: 'rgba(0, 0, 0, 0.9)',
-        borderWidth:1,
+        borderWidth: 1,
         // borderColor:'#ebebeb',s
-        borderColor:Platform.OS === 'android' ? '#fff' :  '#fcfafa',
-        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' :  'rgba(0, 0, 2, 0)',
+        borderColor: Platform.OS === 'android' ? '#fff' : '#fcfafa',
+        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 2, 0)',
         shadowOpacity: 0.8,
         shadowOffset: { width: 1, height: 13 },
         elevation: 4,
     },
-    linearGradientfiltermodal:{
+    linearGradientfiltermodal: {
         textAlign: 'center',
         justifyContent: 'center',
         display: 'flex',
         flexDirection: "row",
         alignItems: 'center',
-        width: 60,
-        height: 60,
+        width: 50,
+        height: 50,
         borderRadius: 50,
         backgroundColor: "#fff",
         shadowRadius: 50,
@@ -568,11 +523,12 @@ marginRight:'auto',
         shadowOpacity: 0.8,
         shadowOffset: { width: 1, height: 13 },
         elevation: 4,
-        marginBottom:5,
-    position:'relative',
-    bottom:10,
+        marginBottom: 5,
+        position: 'relative',
+        bottom: 0,
+        left: 10,
     },
-    
+
     listinfo: {
         justifyContent: 'flex-start',
         display: 'flex',
@@ -587,16 +543,20 @@ marginRight:'auto',
         color: '#000',
         fontSize: 12,
         lineHeight: 18,
+        marginBottom: 20,
+        fontFamily: "Inter-Medium",
     },
     parasded: {
         color: '#222',
         marginBottom: 4,
         fontSize: 12,
+        fontFamily: "Inter-Medium",
     },
     icmsection: {
         color: '#1B52DF',
         paddingTop: 2,
         paddingRight: 6,
+        fontFamily: "Inter-Medium",
     },
     cardxi: {
         width: 75,
@@ -620,9 +580,9 @@ marginRight:'auto',
     },
     cricleiconb: {
         fontSize: 20,
-        borderWidth:1,
-        borderColor:Platform.OS === 'android' ? '#fff' :  '#ebebeb',
-        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' :  'rgba(0, 0, 2, 0)',
+        borderWidth: 1,
+        borderColor: Platform.OS === 'android' ? '#fff' : '#ebebeb',
+        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 2, 0)',
         shadowOpacity: 0.8,
         elevation: 4,
         backgroundColor: '#fff',
@@ -641,9 +601,9 @@ marginRight:'auto',
         paddingRight: 20,
     },
     viewjobsedit: {
-        borderWidth:1,
-        borderColor:Platform.OS === 'android' ? '#fff' :  '#ebebeb',
-        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' :  'rgba(0, 0, 2, 0)',
+        borderWidth: 1,
+        borderColor: Platform.OS === 'android' ? '#fff' : '#ebebeb',
+        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 2, 0)',
         shadowOpacity: 0.8,
         elevation: 4,
         backgroundColor: '#fff',
@@ -660,9 +620,9 @@ marginRight:'auto',
         textTransform: 'capitalize',
     },
     viewjobsdelete: {
-        borderWidth:1,
-        borderColor:Platform.OS === 'android' ? '#fff' :  '#ebebeb',
-        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' :  'rgba(0, 0, 2, 0)',
+        borderWidth: 1,
+        borderColor: Platform.OS === 'android' ? '#fff' : '#ebebeb',
+        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 2, 0)',
         shadowOpacity: 0.8,
         elevation: 4,
         backgroundColor: '#fff',
@@ -682,10 +642,10 @@ marginRight:'auto',
         backgroundColor: '#fff',
         padding: 16,
         borderRadius: 10,
-        borderWidth:1,
+        borderWidth: 1,
         // borderColor:'#ebebeb',
-        borderColor:Platform.OS === 'android' ? '#fff' :  '#ebebeb',
-        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' :  'rgba(0, 0, 2, 0)',
+        borderColor: Platform.OS === 'android' ? '#fff' : '#ebebeb',
+        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 2, 0)',
         shadowOpacity: 0.8,
         elevation: 4,
         shadowRadius: 50,
@@ -707,7 +667,8 @@ marginRight:'auto',
     },
     fullsectionjoblisst: {
         marginBottom: 60,
-        padding:20,
+        padding: 20,
+
     },
     listlcv: {
         color: '#787878',
@@ -727,8 +688,9 @@ marginRight:'auto',
         padding: 0,
         paddingBottom: 0,
         borderRadius: 10,
-        marginBottom: 20,
-        margin:0,
+        marginBottom: 10,
+        margin: 0
+
 
     },
     serviceflex: {
@@ -741,7 +703,7 @@ marginRight:'auto',
     headingjobs: {
         fontSize: 14,
         color: '#1B52DF',
-        fontWeight: '500',
+        fontWeight: '600',
         marginBottom: 4,
         paddingRight: 40,
         width: 230,
@@ -780,7 +742,7 @@ marginRight:'auto',
         shadowRadius: 4,
         elevation: 5,
     },
-   
+
     button: {
         borderRadius: 20,
         padding: 10,
@@ -809,23 +771,23 @@ marginRight:'auto',
     },
     searchbarmessagelist: {
         marginTop: 20,
-        marginBottom:20,
-        width:'100%',
+        marginBottom: 20,
+        width: '100%',
     },
-    catagprylistbtnactive:{
-        borderWidth:1,
-        borderColor:Platform.OS === 'android' ? '#fff' :  '#ebebeb',
-        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' :  'rgba(0, 0, 2, 0)',
+    catagprylistbtnactive: {
+        borderWidth: 1,
+        borderColor: Platform.OS === 'android' ? '#fff' : '#ebebeb',
+        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 2, 0)',
         shadowOpacity: 0.8,
         elevation: 4,
-        backgroundColor : '#fff',
+        backgroundColor: '#fff',
         shadowRadius: 10,
-        textAlign:'center',
-        marginBottom:14,
+        textAlign: 'center',
+        marginBottom: 14,
         color: '#1B52DF',
         fontWeight: '500',
         width: '80%',
-        fontSize:12,
+        fontSize: 12,
         padding: 14,
         borderRadius: 10,
     },

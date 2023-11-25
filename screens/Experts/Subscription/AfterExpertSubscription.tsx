@@ -8,7 +8,7 @@ import ExpertLayout from '../ExpertLayout';
 export default function AfterExpertSubscription() {
   const platform = Platform.OS
   return (
-    <ExpertLayout title="Subscription" isChildren={true}>
+    <ExpertLayout MessageTextBarHidden title="Subscription" isChildren={true}>
         <View style={styles.aftersection}>
         <View style={[styles.headingactive]}>
              <Text style={[styles.texthedinbgactive]}> Active Plan </Text>
@@ -38,7 +38,6 @@ export default function AfterExpertSubscription() {
                </View>
                 <View style={styles.liniannualpack}> 
                 <View style={styles.justwosection}>
-                    <View>
                     <RNLinearGradient style={styles.linearGradientactive}
                     direction="column"
                     colors={['hsl(222, 83%, 32%)', 'hsl(223, 86%, 65%)']} >
@@ -64,7 +63,6 @@ export default function AfterExpertSubscription() {
                         </View>
                     </View>
                     </RNLinearGradient>
-                    </View>
                         <View style={styles.exprsection}>
                         <Text style={styles.trantextexpiry}>Expiry Date</Text>
                         <View style={styles.exprft}>
@@ -95,7 +93,8 @@ const styles = StyleSheet.create({
         height:'100%',
       },
       viewdf:{
-         padding:10,
+         padding:14,
+         borderRadius:10,
       },
       fullfreelan: {
         width: '60%',
@@ -135,12 +134,15 @@ const styles = StyleSheet.create({
       fontSize:26,
       textAlign:'center',
       fontWeight:'700',
-      color:'#1B52DFs',
+      color:'#1B52DF',
       },
       justwosection:{
         justifyContent: 'center',
         display: 'flex',
         flexDirection: "row",
+        paddingBottom:0,
+      
+
       },
       exprsection:{
         shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' :  'rgba(0, 0, 0, 0)',
@@ -176,6 +178,7 @@ marginBottom:6,
         justifyContent: 'center',
         display: 'flex',
         flexDirection: "row",
+        paddingBottom:18,
       },
       transubtext:{
         color:'#fff',
@@ -193,6 +196,7 @@ height:'100%',
       },
       liniannualpack:{
 padding:20,
+// paddingRight:20,
       },
       texthedinbgactive:{
         fontSize:18,
@@ -221,14 +225,10 @@ marginRight:'auto',
          linearGradientactive:{
             textAlign: 'center',
             fontWeight: "bold",
-            // width: '100%',s
-            padding: 12,
             paddingTop:18,
             borderRadius: 10,
             marginTop: 20,
-            marginLeft:'auto',
-            marginRight:'auto',
-            marginBottom: 10,
+            marginBottom: 0,
             shadowOpacity: 1,
             
         },

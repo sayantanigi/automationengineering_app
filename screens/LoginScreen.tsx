@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text,  View, Image, ViewStyle, TouchableOpacity, Platform, } from 'react-native';
 // import Logo from "../assets/logo.png"
 import { useNavigation } from "@react-navigation/native";
@@ -8,19 +8,129 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import RNLinearGradient from "../components/RNLinearGradient";
 import TouchableRipple from "../components/TouchableRipple";
 import TextInput from "../components/TextInput";
+import SnackBar from "../components/SnackBar";
+import ProgressBar from "../components/ProgressBar";
+import { BASE_URL } from "../Network/URL";
+import { setUser } from "../stores/userAsync";
 
+export interface LoginData {
+   status: string
+  result: LoginResult
+  subscription: string
+  userType: string
+  profile: string
+  }
+  export interface LoginResult {
+    userId: string
+    companyname: string
+    firstname: string
+    lastname: string
+    username: any
+    email: string
+    mobile: string
+    dob: any
+    password: string
+    profilePic: string
+    userType: string
+    serviceType: any
+    created: string
+    modified: string
+    status: string
+    email_verified: string
+    address: string
+    latitude: string
+    longitude: string
+    zip: string
+    resume: string
+    additional_image: string
+    short_bio: string
+    video: string
+    gender: string
+    experience: string
+    qualification: string
+    skills: string
+    oauth_provider: string
+    oauth_uid: string
+    view_count: string
+    foundedyear: string
+    teamsize: string
+  }
+  
+interface userValue {
+    email: string,
+    password: string,
+
+}
 export default function LoginScreen() {
-
+    const [alert, setAlert] = useState("")
+    const [loading, setLoading] = useState(false)
     const [passwordShow, setPasswordshow] = useState(false);
     const Navigation = useNavigation<any>()
+    const [errors, setErrors] = useState<any>({})
+
+    
+    const [formData, setFormData] = useState<userValue>({
+        email: "",
+        password: ""
+    })
+    function handleValueChange(value: string, key: string) {
+        setFormData({ ...formData, [key]: value })
+    }
     function gotoCreateaccount() {
         Navigation.navigate('RegisterScreen')
     }
     function gotoForgotPassword() {
         Navigation.navigate('ForgotPasswordScreen')
     }
-    function gotoHome() {
-        Navigation.navigate('ExpertDashboard')
+
+   
+
+   async function gotoHome() {
+    
+
+    if(formData.email.length===0){
+        setAlert("Enter valid email")
+    }
+    else if(formData.password.length===0){
+        setAlert("Enter valid password")
+    }
+    else{
+        setLoading(true)
+        let response = await fetch(BASE_URL + "login", {
+            method: "POST",
+            body: JSON.stringify(formData),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+
+        let json = await response.json()
+        setLoading(false)
+        
+       
+           
+           if(json.userType==="1"){
+            Navigation.navigate('ExpertDashboard')
+            await setUser({userType: json.result.userType, userId: json.result.userId, firstname: json.result.firstname, lastname: json.result.lastname,email: json.result.email,profilePic: json.result.profilePic})
+
+           }
+           else if(json.userType==="2"){
+            Navigation.navigate('BusinessDashboard')
+            await setUser({userType: json.result.user_type, userId: json.result.userId, firstname: json.result.firstname, lastname: json.result.lastname,email: json.result.email,profilePic: json.result.profilePic})
+
+           }
+           else{
+            setAlert("Invalid inputs")
+           }
+           
+           
+    }
+  
+   // setLoading(true)
+      //  Navigation.navigate('ExpertDashboard')
+    }
+    function gotoExpertDashboard() {
+        Navigation.navigate('BusinessDashboard')
     }
     return (
         <SafeAreaView style={styles.cardpages}>
@@ -39,13 +149,17 @@ export default function LoginScreen() {
 
             <View style={styles.pgfull}>
             <TextInput
+            onChangeText={(text) => handleValueChange(text, "email")}
              placeholder="Email Addresss"/>
             </View>
 
             <View style={styles.pgfull}>
             <TextInput 
             placeholder="Password"
-                                />
+            onChangeText={(text) => handleValueChange(text, "password")}
+            secureTextEntry={!passwordShow}
+            
+            />
            </View>
 
             <View style={styles.pgfullpassword}>
@@ -63,6 +177,7 @@ export default function LoginScreen() {
                        >
                         <FontAwesome
                              pointerEvents="none"
+                             onPress={function () { setPasswordshow(!passwordShow) }}
                             name={passwordShow ? "eye-slash" : "eye"}
                             style={styles.cricleitext}
                         ></FontAwesome>
@@ -75,9 +190,17 @@ export default function LoginScreen() {
                     direction="column"
                     style={styles.linearGradient}
                     colors={['hsl(222, 83%, 32%)', 'hsl(223, 86%, 65%)']} >
-                    <Text style={styles.buttontext} >Log In </Text>
+                    <Text style={styles.buttontext} >Log In</Text>
                 </RNLinearGradient>
             </TouchableRipple>
+            {/* <TouchableRipple onPress={gotoExpertDashboard} style={styles.wdtg}>
+                <RNLinearGradient
+                    direction="column"
+                    style={styles.linearGradient}
+                    colors={['hsl(222, 83%, 32%)', 'hsl(223, 86%, 65%)']} >
+                    <Text style={styles.buttontext} >Log In With Business</Text>
+                </RNLinearGradient>
+            </TouchableRipple> */}
 
             <View style={styles.downsection}>
                 <Text style={styles.signup}>Don't have an account?
@@ -89,8 +212,12 @@ export default function LoginScreen() {
             <TouchableOpacity onPress={gotoForgotPassword} activeOpacity={0.9}>
                 <Text style={styles.forgot} >Forgot password?</Text>
             </TouchableOpacity>
+            <ProgressBar loading={loading} />
 
+            <SnackBar alert={alert} setAlert={setAlert} type="LONG" />
         </SafeAreaView>
+
+        
 
     )
 }
@@ -105,7 +232,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         display: 'flex',
         backgroundColor: '#f5f5fa',
-
     },
     pgfull:{
         width:'90%',
@@ -172,7 +298,6 @@ width:'100%',
         marginBottom: 50,
         fontFamily: "Inter-Bold"
     },
-
     downsection: {
         justifyContent: 'center',
         display: 'flex',
@@ -190,8 +315,6 @@ width:'100%',
         textAlign: 'center',
         backgroundColor: '#000',
     },
-
-
     forgot: {
         padding: 4,
         marginTop: 10,

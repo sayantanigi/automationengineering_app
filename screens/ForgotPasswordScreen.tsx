@@ -19,7 +19,7 @@ export default function ForgotPassword() {
     const platform = Platform.OS
     const Navigation = useNavigation<any>()
     function gotoCreateaccount() {
-        Navigation.navigate('Createaccount')
+        Navigation.navigate('RegisterScreen')
     }
   
     return (

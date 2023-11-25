@@ -86,7 +86,7 @@ export default function DropdownSelect(props: DropdownSelect) {
                         onPress={() => handleSelection(option)}
                         key={key}>
                         <Text
-
+                            
                             style={styles.option} key={key}>
                             {option.label}
                         </Text>

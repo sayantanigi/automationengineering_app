@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "afrebay",
-    "slug": "Afrebay",
-    "version": "1.0.0",
+    "name": "Automationengineering",
+    "slug": "Automationengineering",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -20,11 +20,21 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#fff"
-      }
+        "backgroundColor": "#fff",
+        
+      },
+      "package": "com.automationengineering"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e0e4716b-42d2-4f19-8590-63f5242bba37"
+      }
     }
+
+
+
   }
 }

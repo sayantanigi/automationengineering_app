@@ -1,11 +1,11 @@
 import { StatusBar } from "expo-status-bar";
-import { Animated, BackHandler, Dimensions, Easing, Image, ImageBackground, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View, ViewBase } from "react-native";
+import { Animated, BackHandler, Dimensions, Easing, Image, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View, ViewBase } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colorPrimary, colorPrimarySecond } from "../../constants/color";
 import TouchableRipple from "../../components/TouchableRipple";
 import { FontAwesome, AntDesign, Foundation } from "@expo/vector-icons";
-import { Link,  useRoute } from "@react-navigation/native";
-import React from "react";
+import { Link, useRoute } from "@react-navigation/native";
+import React, { useEffect } from "react";
 import RNLinearGradient from "../../components/RNLinearGradient";
 import TextInput from "../../components/TextInput";
 import DropdownSelect from "../../components/DropdownSelect";
@@ -14,12 +14,18 @@ import MyJobs from "./ExpertMyjobs";
 import JobTabView from "../../components/TabView";
 // import ExpertsChat from "./Chat/ExpertsChat";
 import { useNavigation } from '@react-navigation/native';
+import { useUser } from "../../stores/user";
+import { getUser } from "../../stores/userAsync";
+import MessageTextBar from "../../components/MessageTextBar";
 
 interface ExpertLayout {
     children?: any;
     isFIlter?: boolean,
     isChildren?: boolean,
     title?: string;
+    disable: boolean,
+    TabBarHidden?: boolean,
+    MessageTextBarHidden?: boolean,
 }
 const Navs = [
     {
@@ -60,22 +66,41 @@ const Navs = [
 
 ]
 function DrawerView({ setDrawer }: any) {
+    const [user, setUser] = useUser()
     const Navigation = useNavigation<any>()
+    let Username = "";
+    let userPic = "";
+    let userEmail = "";
+
+
     function gotosettings() {
         Navigation.navigate('Settings')
     }
+    function gotoLogin() {
+        Navigation.navigate('LoginScreen')
+    }
     const navigate = useNavigation<any>()
+
+    useEffect(() => {
+        (async () => {
+
+            setUser(await getUser())
+
+
+        })();
+    }, [])
+
     return (
         <SafeAreaView style={styles.drawerWrapper}>
             <View style={styles.drawerHeader}>
                 <View style={styles.drawerProfile}>
                     <Image
-                        source={require("../../assets/images/flx1.png")}
+                        source={{ uri: user?.profilePic }}
                         resizeMode="cover"
                         style={styles.drawerAvatar}
                     />
                     <View>
-                        <Text style={styles.drawerName}>Satadeep Dasgupta</Text>
+                        <Text style={styles.drawerName}>{user?.firstname + " " + user?.lastname}</Text>
                         <Text style={styles.drawerStatus}>Status Active</Text>
                     </View>
                 </View>
@@ -85,7 +110,7 @@ function DrawerView({ setDrawer }: any) {
                     <Text style={styles.drawerClose}>&times;</Text>
                 </TouchableRipple>
             </View>
-            <View style={{ marginTop: 50 }}>
+            <View style={{ marginTop: 40 }}>
                 {Navs.map((nav, key) => (
                     <TouchableRipple
                         style={styles.nav}
@@ -103,19 +128,21 @@ function DrawerView({ setDrawer }: any) {
                 ))}
             </View>
             <View style={styles.drawerBottom}>
-            <TouchableOpacity onPress={gotosettings}  style={{ paddingVertical: 15 }} activeOpacity={0.9}>
-                <View style={styles.drawerSettings}>
-                    <FontAwesome
-                        name="cog"
-                        style={styles.navicon}
-                    />
-                    <Text style={styles.navText}>Settings</Text>
-                </View>
+                <TouchableOpacity onPress={gotosettings} style={{ paddingVertical: 15 }} activeOpacity={0.9}>
+                    <View style={styles.drawerSettings}>
+                        <FontAwesome
+                            name="cog"
+                            style={styles.navicon}
+                        />
+                        <Text style={styles.navText}>Settings</Text>
+                    </View>
                 </TouchableOpacity>
-                <Text
-                    style={[styles.navText, {
-                        marginLeft: 9
-                    }]}>Logout</Text>
+                <TouchableOpacity onPress={gotoLogin}>
+                    <Text
+                        style={[styles.navText, {
+                            marginLeft: 9
+                        }]}>Logout</Text>
+                </TouchableOpacity>
             </View>
         </SafeAreaView>
     )
@@ -124,7 +151,7 @@ export default function ExpertLayout(props: ExpertLayout) {
     const [drawer, setDrawer] = React.useState(false)
     const scale = React.useRef(new Animated.Value(1)).current;
     const Navigation = useNavigation<any>()
- 
+
     React.useEffect(() => {
         if (drawer) {
             Animated.timing(scale, {
@@ -168,7 +195,6 @@ export default function ExpertLayout(props: ExpertLayout) {
     function gotojobdetails() {
         Navigation.navigate('Job-Details')
     }
- 
 
     return (
         <View style={styles.container}>
@@ -181,11 +207,18 @@ export default function ExpertLayout(props: ExpertLayout) {
                 <SafeAreaView style={styles.contentWrapper}>
                     <Header title={props.title} setDrawer={setDrawer} />
                     {props.isChildren ? <ScrollView
+                        scrollEnabled={!props.disable}
                         style={styles.contentContainer}>
                         {props.children}
-                    </ScrollView> : <JobTabView />
-                    }
-                    <TabBar />
+                    </ScrollView> : <></>}
+                    {!props.isChildren ? <JobTabView /> : <></>}
+                    {props.isChildren && props.disable ? <View
+                        style={styles.contentContainer}>
+                        {props.children}
+                    </View> : <></>}
+
+                    {!props.TabBarHidden ? <TabBar /> : null}
+                    {!props.MessageTextBarHidden ? <MessageTextBar /> : null}
                     {props.isFIlter && <View style={styles.fixedjobbtn}>
                         <Pressable onPress={() => setModalVisible(true)}>
                             <View style={styles.linearGradientfilter} >
@@ -195,6 +228,7 @@ export default function ExpertLayout(props: ExpertLayout) {
                     </View>}
                 </SafeAreaView>
             </Animated.View>
+
         </View>
     )
 }
@@ -204,7 +238,7 @@ export const Header = ({ setDrawer, title }: any) => {
     const platform = Platform.OS
     const navigation = useNavigation<any>()
     return (
-        <View style={platform === 'android' ? headerStyle.header : headerStyle.osheader}>
+        <View style={[platform === 'android' ? headerStyle.header : headerStyle.osheader, styles.HeaderBack]}>
             <View>
                 {title ? (
 
@@ -218,10 +252,7 @@ export const Header = ({ setDrawer, title }: any) => {
                             <Ionicons name="chevron-back" size={20} color="#222" style={styles.adfgicon} /> :
                             <Ionicons name="arrow-back-sharp" size={20} color="#222" style={styles.adfgicon} />}
                         <Text style={styles.backbtntext}>{title} </Text>
-                    </TouchableOpacity>
-
-
-                ) : (<Image style={headerStyle.logoHeader}
+                    </TouchableOpacity> ) : (<Image style={headerStyle.logoHeader}
                     source={require('../../assets/logo.png')}
                     resizeMode="contain"
                 />)}
@@ -239,9 +270,9 @@ export const Header = ({ setDrawer, title }: any) => {
 
 // Footer Buttom Start
 function TabBar() {
-  
+
     return (
-        
+
         <View style={styles.tabBar}>
             <TabButton
 
@@ -275,11 +306,11 @@ function TabBar() {
 interface TabButton {
     icon?: any;
     route?: string;
-    
+
 }
 function TabButton(props: TabButton) {
     const route = useRoute()
-  
+
     const navigation = useNavigation<any>()
 
     const active = route.name == props.route
@@ -359,7 +390,7 @@ function TabButtonSearch() {
                         </Pressable>
 
 
-                    
+
 
                         <DropdownSelect
                             options={options}
@@ -393,6 +424,9 @@ function TabButtonSearch() {
     )
 }
 const styles = StyleSheet.create({
+    HeaderBack: {
+        backgroundColor: '#fff',
+    },
     container: {
         flex: 1,
         backgroundColor: "#F5F5FA"
@@ -482,7 +516,7 @@ const styles = StyleSheet.create({
         width: '100%',
         flexDirection: 'row',
         alignItems: "center",
-        height: 60,
+        height: 55,
         padding: 8,
         marginTop: 7,
         borderRadius: 10
@@ -526,7 +560,7 @@ const styles = StyleSheet.create({
 
         width: '100%',
         // height: 80,
-      
+
         // position: 'absolute',
         backgroundColor: '#f5f5fa',
         shadowColor: "#000",
@@ -547,7 +581,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 12,
         justifyContent: "space-between"
-     
+
 
     },
     tabSearch: {

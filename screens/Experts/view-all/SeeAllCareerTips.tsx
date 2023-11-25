@@ -5,28 +5,46 @@ import { useNavigation } from "@react-navigation/native";
 import TouchableRipple from "../../../components/TouchableRipple";
 import RNLinearGradient from "../../../components/RNLinearGradient";
 import ExpertLayout from "../ExpertLayout";
+import { useHomeListData } from "../../../Network/APIService";
+import { useEffect, useState } from "react";
+import { GetCareer, GetOurservice } from "../../../Network/HomeListApi";
 export default function SeeAllCareerTips() {
     const Navigation = useNavigation<any>()
     function gotoCareerTips() {
         Navigation.navigate('CareerTips')
     }
     const platform = Platform.OS
+
+    const homeData = useHomeListData()
+    const [getCarear, setCarerear] = useState(Array<GetCareer>());
+
+    useEffect(() => {
+         
+
+        let data= homeData.data?.get_career ?? []
+      //  console.log(data)
+        setCarerear(data)
+ 
+     }, []);
+
+
+
     return (
      
         <ExpertLayout title="All Career Tips" isChildren={true}>
                 <View style={styles.carimg}>
-                    {careersec.map((item, index) => {
+                    {getCarear.map((item, index) => {
                         return <View style={styles.scrollViewCareer} key={index}>
                             <View>
-                            <Image source={item.image} style={styles.Careerimg} resizeMode='cover' />
+                            <Image source={ { uri: item.image }} style={styles.Careerimg} resizeMode='cover' />
                          
                             <View style={styles.textcr}>
                                 <Text style={styles.titlecrp} numberOfLines={2}>{item.title}</Text>
-                                <Text style={styles.textb}>{item.text} | <Text style={styles.textcomment}>{item.comment}</Text></Text>
-                                <Text style={styles.deccareer} numberOfLines={4}>{item.dec}</Text>
+                                <Text style={styles.textb}>{item.update_date} | <Text style={styles.textcomment}>coment</Text></Text>
+                                <Text style={styles.deccareer} numberOfLines={4}>{item.description?.replace(/<\/?[^>]+(>|$)/g, "")}</Text>
                             </View>
                             </View>
-                            <TouchableRipple style={styles.wdtbtn}>
+                            <TouchableRipple onPress={gotoCareerTips} style={styles.wdtbtn}>
                                     <RNLinearGradient
                                         direction="column"
                                         style={styles.linearGradient}
@@ -55,6 +73,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 12,
+        fontFamily: "Inter-Medium",
     },
     wdtbtn:{
         width:'50%',
@@ -66,6 +85,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 13,
+        fontFamily: "Inter-Medium",
     },
     carimg:{
       margin:0,
@@ -87,14 +107,16 @@ const styles = StyleSheet.create({
     },
     deccareer: {
         fontSize: 12,
-        lineHeight: 16,
-        fontWeight: '400',
+        lineHeight: 18,
+        // fontWeight: '400',
         color: '000000',
+        fontFamily: "Inter-Medium",
     },
     textb: {
         color: '#909090',
         fontSize: 10,
         marginBottom: 6,
+        fontFamily: "Inter-Medium",
     },
     textcomment:{
         color: '#1B52DF',
@@ -121,6 +143,7 @@ const styles = StyleSheet.create({
         color: '#1B52DF',
         fontSize: 14,
         marginBottom:8,
+        fontFamily: "Inter-Medium",
     },
     textcr:{
         paddingTop:16,

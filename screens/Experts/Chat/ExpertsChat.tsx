@@ -4,36 +4,73 @@ import { StyleSheet } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 
 import { Searchbar } from 'react-native-paper';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ExpertLayout from '../ExpertLayout';
+import { useUser } from '../../../stores/user';
+import { getUser, setChatInput } from '../../../stores/userAsync';
+import { BASE_URL } from '../../../Network/URL';
+import { GetChatUser, GetUserlistbbyjobbid } from '../../../Network/HomeListApi';
 
 export default function ExpertsChat() {
     const platform = Platform.OS
     const [searchQuery, setSearchQuery] = React.useState('');
+    const[getUserdata,setUserdata]= useState(Array<GetChatUser>());
+    const[getlistbbyjobbid,setlistbbyjobbid]= useState(Array<GetUserlistbbyjobbid>());
+
     const Navigation = useNavigation<any>()
     const onChangeSearch = (query: React.SetStateAction<string>) => setSearchQuery(query);
+    const [user, setUser] = useUser()
 
-    function gotoMessagesDetails() {
+    useEffect(() => {
+
+        (async () => {
+    
+            setUser(await getUser())
+          
+            let response = await fetch(BASE_URL + "chatUser_list", {
+                method: "POST",
+                body: JSON.stringify({ user_id: String(user?.userId) as any}),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            let json = await response.json()
+            setUserdata(json.result.get_user)
+            setlistbbyjobbid(json.result.get_userlistbbyjobbid)
+      })();
+    
+      }, []);
+   async function gotoMessagesDetails(user_id:string,post_id:string) {
         Navigation.navigate('ExpertsChatDetails')
+        await setChatInput({userf_id: user_id, post_id: post_id ,usert_id:user?.userId})
     }
     return (
-        <ExpertLayout isChildren={true}>
+        <ExpertLayout MessageTextBarHidden isChildren={true} disable={false}>
             <View style={styles.jobslistcard}>
                 <View style={styles.companytitile}>
-                    <View style={styles.serviceacctiveb}>
-                        <Image source={require('../../../assets/images/flx1.png')} style={styles.cardxi} />
+
+                {
+                    getUserdata?.map(function (item: GetChatUser, index: number) {
+                        return (
+                            <View style={styles.serviceacctiveb}>
+                        <Image source={{uri:item.profilePic}} style={styles.cardxi} />
                         <View style={styles.textsr}>
                             <Text style={styles.headingjobs} numberOfLines={2}>
-                                Vendor Company   Vendor Company  Vendor Company  Vendor Company  Vendor Company
+                                {item.firstname+" "+item.lastname}
                             </Text>
                             <Text style={styles.parajobs}>
-                                Vendor
+                                Expert
                             </Text>
                             <View style={styles.activestatus}>
                                 <Text style={styles.activetext}>active</Text>
                             </View>
                         </View>
                     </View>
+
+                        )
+                    })
+                    }
+
                 </View>
 
                 <View style={styles.searchbarmessagelist}>
@@ -55,25 +92,21 @@ export default function ExpertsChat() {
 
 
                 <FlatList
-                    data={[{
-                        name: "Arunaksha Sautya"
-                    }, {
-                        name: "Arunaksha Sautya"
-                    }]}
+                    data={getlistbbyjobbid}
                     renderItem={({ item }) => {
-                        return <TouchableOpacity onPress={gotoMessagesDetails} activeOpacity={0.9}>
+                        return <TouchableOpacity  onPress={() => gotoMessagesDetails(item.user_id, item.post_id)}  activeOpacity={0.9}>
                             <View style={styles.padf}>
                                 <View style={styles.serviceflex}>
-                                    <Image source={require('../../../assets/images/freelancers4.jpg')} style={styles.chatxc} />
+                                    <Image source={{uri:item.profilePic}} style={styles.chatxc} />
                                     <View style={styles.textsr}>
                                         <Text style={styles.headingjobs} numberOfLines={1}>
-                                            {item.name}
+                                            {item.full_name}
                                         </Text>
                                         <Text style={styles.parajobs} numberOfLines={1}>
-                                            In publishing and graphic design, Lorem ...
+                                            {item.description}
                                         </Text>
                                         <Text style={styles.parajobs}>
-                                            job ID <Text style={styles.jobtext}>JD-1298</Text>
+                                            job ID <Text style={styles.jobtext}>{item.postjob_id}</Text>
                                         </Text>
                                     </View>
                                 </View>
@@ -136,6 +169,7 @@ const styles = StyleSheet.create({
         shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 0, 0)',
         shadowOpacity: 0.8,
         elevation: 4,
+        fontFamily: "Inter-Medium",
         backgroundColor: '#fff',
         padding: 6,
 
@@ -150,6 +184,7 @@ const styles = StyleSheet.create({
     },
     jobtext: {
         color: '#222',
+        fontFamily: "Inter-Medium",
     },
     listofchat: {
         backgroundColor: '#fff',
@@ -207,11 +242,13 @@ const styles = StyleSheet.create({
         color: '#1B52DF',
         fontWeight: '500',
         marginBottom: 4,
+        fontFamily: "Inter-Medium",
     },
     parajobs: {
         color: '#909090',
         fontSize: 12,
         marginBottom: 4,
+        fontFamily: "Inter-Medium",
     },
     cricleiconb: {
         fontSize: 20,

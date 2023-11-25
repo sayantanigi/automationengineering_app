@@ -29,7 +29,7 @@ export const services4 = require("../assets/images/Digitalmarketing.jpg");
 // Services End
 
 // Ouick Career Tips Start
-export const careerimg1 = require("../assets/images/cr1.jpg");
+export const careerimg1 = require("../assets/images/cr1.png");
 export const careerimg2 = require("../assets/images/career.jpg");
 export const careerimg3 = require("../assets/images/career1.jpg");
 export const careerimg4 = require("../assets/images/career2.jpg");

@@ -1,11 +1,14 @@
-import { ImageBackground, StyleSheet, TextInput as TextInputBase } from "react-native";
+import { ImageBackground, StyleSheet, TextInput as TextInputBase, TextInputProps } from "react-native";
 import { colorPrimary } from "../constants/color";
 
 
-interface TextInput {
+interface TextInput extends TextInputProps {
     placeholder?: string;
     value?: string;
+    secureTextEntry?: boolean;
     onChangeText?: (val: string) => void;
+    editable?:boolean
+    
 
 }
 export default function TextInput(props: TextInput) {
@@ -15,13 +18,15 @@ export default function TextInput(props: TextInput) {
             resizeMode="stretch"
             source={require("../assets/shadows/input.png")}>
             <TextInputBase
+                {...props}
                 cursorColor={colorPrimary}
                 style={styles.input}
                 placeholder={props.placeholder}
                 onChangeText={props.onChangeText}
                 value={props.value}
+                
                 placeholderTextColor={"#D6D6D6"}
-                multiline
+
             />
         </ImageBackground>
     )
@@ -34,11 +39,12 @@ const styles = StyleSheet.create({
         marginVertical: 12,
     },
     input: {
-        paddingLeft:20,
+        paddingLeft: 20,
         flexGrow: 1,
         height: '100%',
         fontFamily: "Inter-Medium",
-        paddingHorizontal: 7,
+        padding: 0,
+        lineHeight: 30,
         fontSize: 16,
         color: "#686868"
     }

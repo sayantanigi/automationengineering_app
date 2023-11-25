@@ -2,68 +2,111 @@ import ExpertLayout from "./ExpertLayout";
 import { Dimensions, FlatList, Image, ImageBackground, ListRenderItemInfo, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { colorPrimary, colorPrimarySecond } from "../../constants/color";
 import { useHomeListData } from "../../Network/APIService";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 
-import { GetPost, GetUser, HomeListRespose } from "../../Network/HomeListApi";
+import { GetCareer, GetOurservice, GetPost, GetUser, HomeListRespose } from "../../Network/HomeListApi";
 import RNLinearGradient from "../../components/RNLinearGradient";
 import TouchableRipple from "../../components/TouchableRipple";
+import ProgressBar from "../../components/ProgressBar";
+import SnackBar from "../../components/SnackBar";
+import { BASE_URL } from "../../Network/URL";
+import { setUser } from "../../stores/userAsync";
+
 
 export default function ExpertDashboard() {
     const platform = Platform.OS
     const homeData = useHomeListData()
     const Navigation = useNavigation<any>()
+    const [alert, setAlert] = useState("")
+    const [loading, setLoading] = useState(false)
+
+    // useEffect(() => {
+
+    //    datacheck()
+
+
+
+    // }, []);
+
+    // async function datacheck(){
+
+    //     setLoading(true)
+    //     let response = await fetch(BASE_URL + "home/home_list", {
+    //         method: "GET",
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         }
+    //     })
+
+    //     let json = await response.json()
+    //      JSON.stringify(json);
+    //     let getdata=json.result
+
+    //     console.log(getdata.get_post)
+    //    setgetCurrentPost(getdata.get_post)
+
+    //     setLoading(false)
+
+    // }
     function gotoalljobs() {
         Navigation.navigate('SeeAllJobs')
     }
 
     function gotoallservices() {
+
         Navigation.navigate('SeeAllServices')
     }
 
     function gotoallcareertips() {
         Navigation.navigate('SeeAllCareerTips')
     }
-    function gotoCareerTipsDetails() {
-        Navigation.navigate('CareerTips')
+    async function gotoCareerTipsDetails(careertip_id: any) {
+
+
+        Navigation.navigate('CareerTips', { careertip_id })
     }
-    function gotojobdetails() {
-        Navigation.navigate('ExpertsOpportunitiesDetails')
+    function gotojobdetails(post_id:any) {
+        Navigation.navigate('ExpertsOpportunitiesDetails',{post_id})
     }
+
+
 
     function JobListLayout({ item }: ListRenderItemInfo<GetPost>) {
         const image = item.user_image ? { uri: item.user_image } : require("../../assets/images/default.png")
         return (
-            <TouchableOpacity accessible={true}  onPress={gotojobdetails} activeOpacity={1}>
-            <View style={styles.jobCard} >
-                <Image
-                    style={styles.jobImage}
-                    resizeMode="cover"
-                    source={image}
-                />
-                <View style={styles.jobTextBox}>
-                    <Text
-                        style={styles.jobTitle}
-                        numberOfLines={1}>
-                        {item.post_title}
-                    </Text>
-                    <Text style={styles.jobBy}>
-                        By {item.company_name}
-                    </Text>
-                    <Text
-                        style={styles.jobDetails}
-                        numberOfLines={2}>
-                        {item.description.replace(/(<([^>]+)>)/gi, "")}
-                    </Text>
-                </View>
 
-            </View>
+            
+            <TouchableOpacity accessible={true} onPress={() => gotojobdetails(item.id)} activeOpacity={1}>
+                <View style={styles.jobCard} >
+                    <Image
+                        style={styles.jobImage}
+                        resizeMode="cover"
+                        source={image}
+                    />
+                    <View style={styles.jobTextBox}>
+                        <Text
+                            style={styles.jobTitle}
+                            numberOfLines={1}>
+                            {item.post_title}
+                        </Text>
+                        <Text style={styles.jobBy}>
+                            By {item.company_name}
+                        </Text>
+                        <Text
+                            style={styles.jobDetails}
+                            numberOfLines={2}>
+                            {item.description?.replace(/(<([^>]+)>)/gi, "")}
+                        </Text>
+                    </View>
+
+                </View>
             </TouchableOpacity>
         )
     }
 
 
-    // function vendorListLayout({ item }: ListRenderItemInfo<GetUser>) {
+
     //     const image = item.profilePic ? { uri: item.profilePic } : require("../../assets/images/default.png")
     //     return (
     //         <View style={styles.vendorCard}>
@@ -105,19 +148,16 @@ export default function ExpertDashboard() {
     // }
 
     // Services list
-    function serviceListLayout({ item }: ListRenderItemInfo<GetUser>) {
-        const image = item.profilePic ? { uri: item.profilePic } : require("../../assets/images/default.png")
+    function serviceListLayout({ item }: ListRenderItemInfo<GetOurservice>) {
+        // const image = item.icon ? { uri: item.icon } : require("../../assets/images/default.png")
         return (
             <View style={styles.scrollViewservice}>
                 <View style={styles.serviceflex}>
-                    <Image source={image} style={styles.serviceimg} resizeMode='cover' />
+                    <Image source={{ uri: item.icon }} style={styles.serviceimg} resizeMode='cover' />
 
                     <View style={styles.textsr}>
-                        <Text style={styles.titleservice} numberOfLines={1}>Website Development</Text>
-                        <Text style={styles.dec} numberOfLines={5}>From design to deployment,
-                            skilled developers are needed
-                            to bring vision to life,
-                            empowering business ...</Text>
+                        {/* <Text style={styles.titleservice} numberOfLines={1}>Website Development</Text> */}
+                        <Text style={styles.dec} numberOfLines={5}>{item.description?.replace(/<\/?[^>]+(>|$)/g, "")}</Text>
                     </View>
                 </View>
             </View>
@@ -127,25 +167,21 @@ export default function ExpertDashboard() {
     // Service list end
 
 
-    // Services list
-    function quickcareertripLayout({ item }: ListRenderItemInfo<GetUser>) {
-        const image = item.profilePic ? { uri: item.profilePic } : require("../../assets/images/default.png")
+    // career list
+    function quickcareertripLayout({ item }: ListRenderItemInfo<GetCareer>) {
+        const image = item.image ? { uri: item.image } : require("../../assets/images/default.png")
         return (
             <View style={styles.scrollViewCareer}>
                 <View>
                     <Image source={image} style={styles.Careerimg} resizeMode='cover' />
                     <View style={styles.textcr}>
-                        <Text style={styles.titlecrp} numberOfLines={2}>How generative AI will transform your
-                            work </Text>
-                        <Text style={styles.textb}>May 29,2023 | <Text style={styles.textcomment}>10 Comments</Text></Text>
-                        <Text style={styles.deccareer} numberOfLines={4}>Lorem ipsum dolor sit amet, consectetur adipiscin elit. turip
-                            Suspendisse molestie diam posuere, pharetra dolor nec, die
-                            dapibus orci. Aliquam turpis mauris, accumsan metus non,
-                            laoreet commodo diam ...</Text>
+                        <Text style={styles.titlecrp} numberOfLines={2}>{item.title} </Text>
+                        {/* <Text style={styles.textb}>May 29,2023 | <Text style={styles.textcomment}>10 Comments</Text></Text> */}
+                        <Text style={styles.deccareer} numberOfLines={4}>{item.description?.replace(/<\/?[^>]+(>|$)/g, "")}</Text>
                     </View>
                 </View>
 
-                <TouchableRipple style={styles.wdtg} onPress={gotoCareerTipsDetails}>
+                <TouchableRipple style={styles.wdtg} onPress={() => gotoCareerTipsDetails(item.id)} >
                     <RNLinearGradient
                         direction="column"
                         style={styles.linearGradient}
@@ -161,7 +197,7 @@ export default function ExpertDashboard() {
     // Service list end
 
     return (
-        <ExpertLayout isChildren={true}>
+        <ExpertLayout MessageTextBarHidden isChildren={true} disable={false}>
             <View style={styles.bdyhome}>
                 <View
                     style={styles.sectionHead}>
@@ -179,9 +215,8 @@ export default function ExpertDashboard() {
             </View>
             <View>
                 <View>
-                    <FlatList 
+                    <FlatList
                         contentContainerStyle={{ paddingHorizontal: 6 }}
-
                         overScrollMode="never"
                         bounces={false}
                         showsHorizontalScrollIndicator={false}
@@ -221,8 +256,8 @@ export default function ExpertDashboard() {
                         bounces={false}
                         showsHorizontalScrollIndicator={false}
                         horizontal
-                        data={homeData.data?.get_users ?? []}
-                        keyExtractor={item => item.userId}
+                        data={homeData.data?.get_ourservice ?? []}
+                        keyExtractor={item => item.id}
                         renderItem={serviceListLayout}
                     />
                 </View>
@@ -248,14 +283,13 @@ export default function ExpertDashboard() {
             <View >
                 <View>
                     <FlatList
-
                         contentContainerStyle={{ paddingHorizontal: 6 }}
                         overScrollMode="never"
                         bounces={false}
                         showsHorizontalScrollIndicator={false}
                         horizontal
-                        data={homeData.data?.get_users ?? []}
-                        keyExtractor={item => item.userId}
+                        data={homeData.data?.get_career ?? []}
+                        keyExtractor={item => item.id}
                         renderItem={quickcareertripLayout}
                     />
                 </View>
@@ -294,8 +328,12 @@ export default function ExpertDashboard() {
                     />
                 </View>
             </View> */}
+            <ProgressBar loading={loading} />
+
+            <SnackBar alert={alert} setAlert={setAlert} type="LONG" />
 
         </ExpertLayout>
+
     )
 }
 const styles = StyleSheet.create({
@@ -327,7 +365,7 @@ const styles = StyleSheet.create({
 
     },
     wdtg: {
-        width: '40%',
+        width: '50%',
         marginLeft: 'auto',
         marginRight: 'auto',
     },
@@ -344,9 +382,11 @@ const styles = StyleSheet.create({
         fontFamily: "Inter-Medium",
         color: 'rgba(0,0,0,0.5)',
         marginTop: 8,
-        letterSpacing: 1,
+        lineHeight: 18,
+        letterSpacing: 0.8,
         fontSize: 13,
-        fontWeight: '400',
+        // fontWeight: '400',
+
     },
     scrollViewservice: {
         width: Dimensions.get('window').width - 36,
@@ -357,7 +397,7 @@ const styles = StyleSheet.create({
         marginRight: 12,
         marginLeft: 12,
         maxHeight: 140,
-        
+
         shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 0, 0)',
         backgroundColor: "#f5f5fa",
         shadowOffset: {
@@ -387,7 +427,7 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 10,
     },
     textsr: {
-        paddingTop: 16,
+        paddingTop: 12,
         paddingLeft: 0,
         paddingBottom: 20,
         paddingRight: 20,
@@ -398,18 +438,21 @@ const styles = StyleSheet.create({
         color: '#1B52DF',
         fontSize: 14,
         marginBottom: 8,
+        fontFamily: "Inter-Medium",
     },
     dec: {
         fontSize: 12,
-        lineHeight: 16,
+        lineHeight: 18,
         fontWeight: '400',
         color: '(0°,0%,0%)',
+        fontFamily: "Inter-Medium",
     },
     deccareer: {
         fontSize: 12,
-        lineHeight: 16,
+        lineHeight: 18,
         fontWeight: '400',
         color: '(0°,0%,0%)',
+        fontFamily: "Inter-Medium",
     },
 
     jobCard: {
@@ -417,7 +460,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         padding: 10,
         borderRadius: 20,
-        
+
         marginBottom: 10,
         maxHeight: 103,
         marginRight: 12,

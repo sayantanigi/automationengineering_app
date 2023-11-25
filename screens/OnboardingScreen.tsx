@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { Animated, Dimensions, Easing, FlatList, Image, ListRenderItemInfo, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Animated, Dimensions, Easing, FlatList, Image, ListRenderItemInfo, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { colorPrimary } from "../constants/color";
 import { Slide, slides } from "../constants/slides";
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         width: '100%',
-        height: 210,
+        height: Platform.OS === 'android' ? 210 : 160,
         padding: 12,
         paddingHorizontal: 27
     },
@@ -190,7 +190,9 @@ const styles = StyleSheet.create({
         right: 27,
         height: 40,
         width: 110,
-        shadowColor: "#000",
+        borderWidth:1,
+        borderColor:Platform.OS === 'android' ? '#fff' :  '#ebebeb',
+        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 0, 0)',
         shadowOffset: {
             width: 0,
             height: 2,

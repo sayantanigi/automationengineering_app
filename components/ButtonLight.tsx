@@ -1,10 +1,9 @@
-import { Pressable, StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, TouchableOpacityProps, ViewStyle } from "react-native";
+import { Platform, Pressable, StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, TouchableOpacityProps, ViewStyle } from "react-native";
 import { colorPrimary } from "../constants/color";
-
-
+import { ReactElement } from "react";
 interface ButtonLight extends TouchableOpacityProps {
     textStyle?: StyleProp<TextStyle>;
-    children?: string
+    children?: string | ReactElement
 
 }
 export default function ButtonLight(props: ButtonLight) {
@@ -27,7 +26,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#f7f7fa',
         marginTop: 30,
         borderRadius: 30,
-        shadowColor: "#000",
+        borderWidth: 1,
+        borderColor: Platform.OS === 'android' ? '#fff' : '#ebebeb',
+        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 0, 0)',
         shadowOffset: {
             width: 0,
             height: 4,

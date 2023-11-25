@@ -32,15 +32,15 @@ export default function ExpertSubscriptionDone() {
                   </RNLinearGradient>
                 </TouchableRipple>
                     <View style={styles.thheading}>
-                        <Text style={styles.textsub}> Thank you for the subscription.
+                        <Text style={styles.textsub}> Thank You For The Subscription.
                         </Text>
                         <Text style={styles.textsubpara}>Your subscription information will be displayed under the subscription menu.s</Text>
                     </View>
                     <View style={styles.fullfreelan}>
-                        <TouchableOpacity  style={styles.mgta} onPress={gotoafterSubscription} activeOpacity={0.9}>
+                        <TouchableOpacity  style={styles.mgta}  activeOpacity={0.9}>
                            <View style={styles.freelbtn} >
                             <Text style={styles.freelbtntext}>
-                                Download invoice
+                                Download Invoice
                             </Text>
                             </View>
                         </TouchableOpacity>

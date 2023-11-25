@@ -20,6 +20,7 @@ const JobTabView = () => {
                     labelStyle={{
                         color: '#222',
                         textTransform: 'capitalize',
+                        fontFamily: "Inter-Medium",
                     }}
 
                 />
@@ -30,7 +31,7 @@ const JobTabView = () => {
                 routes: [
                     { key: 'JobBids', title: 'Job Bid' },
                     { key: 'JobPending', title: 'Pending' },
-                    { key: 'JobReviewed', title: 'Reviewed' },
+                    { key: 'JobReviewed', title: 'Reviewed (2)' },
                 ],
             }}
             renderScene={SceneMap({

@@ -1,4 +1,4 @@
-import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View, useColorScheme,ViewStyle, SafeAreaView, ScrollView, ScrollViewComponent, Platform } from "react-native";
+import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View, useColorScheme, Platform } from "react-native";
 import Carousel, { Pagination } from "react-native-snap-carousel";
 import { Slide, slides } from "../../../constants/slides";
 import { FC, useRef, useState } from "react";
@@ -55,21 +55,17 @@ const renderItem: FC<{
                   </RNLinearGradient>
                 </View>
 
-              
     );
 };
 
 return (
-  
-        <ExpertLayout title="Subscription" isChildren={true}>   
+        <ExpertLayout MessageTextBarHidden title="Subscription" isChildren={true}>   
        <View style={[styles.heading]}>
-             <Text  style={[styles.texthedinbg]}> Grab The Latest AES Expert
-Gigs Today!</Text>
+             <Text  style={[styles.texthedinbg]}> Grab The Latest AES Expert Gigs Today!</Text>
                  <Text style={[styles.textparat]}>
                   Find the most appropriate freelancers for your job from a verity of resources and global workforce.
                 </Text>
-        </View >
-      
+        </View>
         <Carousel
             ref={carouselRef}
             data={slides}
@@ -89,10 +85,8 @@ Gigs Today!</Text>
                     />
               </View>
               </ExpertLayout>
-   
 );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,

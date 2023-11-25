@@ -6,11 +6,11 @@ import { StatusBar } from "expo-status-bar";
 
 export default function RegisterScreen() {
     const Navigation = useNavigation<any>()
-    function gotoBecomefreelancer() {
+    function gotoBecomeexpert() {
         Navigation.navigate('ExpertRegister')
     }
-    function gotoRecruitVendor() {
-        Navigation.navigate('Recruit-Vendor')
+    function gotoBusiness() {
+        Navigation.navigate('BusinessRegister')
     }
 
     return (
@@ -27,14 +27,14 @@ export default function RegisterScreen() {
             </Text>
 
             <View style={styles.fullfreelan}>
-                <TouchableOpacity onPress={gotoBecomefreelancer} activeOpacity={0.9}>
+                <TouchableOpacity onPress={gotoBecomeexpert} activeOpacity={0.9}>
                     <View style={styles.freelbtn}>
                         <Text style={styles.freelbtntext} >
                         Work as an Expert
                         </Text>
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={gotoRecruitVendor} activeOpacity={0.9}>
+                <TouchableOpacity onPress={gotoBusiness} activeOpacity={0.9}>
                     <View style={styles.freelbtn}>
                         <Text style={styles.freelbtntext}>
                         Recruit as a Business
@@ -109,7 +109,9 @@ const styles = StyleSheet.create({
     },
 
     freelbtn: {
-        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 0, 0.1)',
+        borderWidth:1,
+        borderColor:Platform.OS === 'android' ? '#fff' :  '#ebebeb',
+        shadowColor: Platform.OS === 'android' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 0, 0)',
         shadowOpacity: 0.8,
         elevation: 4,
         backgroundColor: '#f5f5fa',

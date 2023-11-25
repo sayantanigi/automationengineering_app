@@ -11,6 +11,7 @@ import React, { ReactElement } from "react";
 interface TouchableRipple extends PressableProps {
     children: ReactElement | ReactElement[];
     style?: StyleProp<ViewStyle>;
+    ripple_color?: string;
 }
 export default function TouchableRipple(props: TouchableRipple) {
     const scale = React.useRef(new Animated.Value(1)).current;
@@ -46,7 +47,7 @@ export default function TouchableRipple(props: TouchableRipple) {
             <Animated.View
                 pointerEvents={"none"}
                 style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.5)",
+                    backgroundColor: props.ripple_color ?? "rgba(255, 255, 255, 0.5)",
                     position: "absolute",
                     height: "4%",
                     zIndex: 1,

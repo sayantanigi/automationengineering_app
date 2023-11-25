@@ -2,21 +2,43 @@ import { Image, ScrollView, Dimensions, SafeAreaView, View, Platform } from "rea
 import { StyleSheet, Text} from 'react-native';
 import {   servicessec } from "../../../constants/slides";
 import ExpertLayout from "../ExpertLayout";
+import { useHomeListData } from "../../../Network/APIService";
+import { useEffect, useState } from "react";
+import { GetOurservice } from "../../../Network/HomeListApi";
 const { width } = Dimensions.get("window");
 export default function ListFreelancers() {
     const platform = Platform.OS
+
+    const homeData = useHomeListData()
+    const [getgetService, setserVices] = useState(Array<GetOurservice>());
+
+    useEffect(() => {
+         
+
+       let data= homeData.data?.get_ourservice ?? []
+       console.log(data)
+       setserVices(data)
+
+    }, []);
+
+
+
+
+
+
     return (
       
         <ExpertLayout title="All Services" isChildren={true}>
             <View style={styles.paddg}>
-                    {servicessec.map((item, index) => {
+                    {getgetService.map((item, index) => {
+                        // const image = item.icon ? { uri: item.icon } : require("../../assets/images/default.png")
                         return  <View style={styles.scrollViewservice} key={index}>
                             <View style={styles.serviceflex}>
-                            <Image source={item.image} style={styles.serviceimg} resizeMode='cover' />
+                            <Image source={ { uri: item.icon }} style={styles.serviceimg} resizeMode='cover' />
                          
                             <View style={styles.textsr}>
-                                <Text style={styles.titleservice}>{item.title}</Text>
-                                <Text style={styles.dec}>{item.dec}</Text>
+                                <Text style={styles.titleservice}>{item.category_id}</Text>
+                                <Text style={styles.dec}>{item.description?.replace(/<\/?[^>]+(>|$)/g, "")}</Text>
                             </View>
                             </View>
                             </View>
@@ -43,6 +65,7 @@ const styles = StyleSheet.create({
         color: '#1B52DF',
         fontSize: 12,
         marginBottom:8,
+        fontFamily: "Inter-Medium",
     },
         paddg:{
         margin:0,
@@ -51,9 +74,10 @@ const styles = StyleSheet.create({
         },
     dec: {
         fontSize: 12,
-        lineHeight: 16,
+        lineHeight: 18,
         fontWeight: '400',
         color: '(0°,0%,0%)',
+        fontFamily: "Inter-Medium",
     },
     textsr:{
         paddingTop:16,

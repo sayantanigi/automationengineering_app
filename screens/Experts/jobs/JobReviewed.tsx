@@ -1,133 +1,124 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView, ImageBackground, ScrollView, View, Text, TouchableOpacity,Image, Platform } from 'react-native'
 import { StyleSheet } from 'react-native';
 import Background from "../../../assets/images/Shape2.png"
 // import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
-
+import { useUser } from '../../../stores/user';
+import { PendingReviewdList } from '../../../Network/HomeListApi';
+import { getUser } from '../../../stores/userAsync';
+import { BASE_URL } from '../../../Network/URL';
+import HTML from 'react-native-render-html';
+export interface userValue {
+    user_id: string
+    user_type: string
+}
 export default function JobReviewed() {
-    // console.log("MY JOPBS")
+    const [user, setUser] = useUser()
+    const [getPendingreviewList, setgetPendingreviewList] = useState(Array<PendingReviewdList>());
+
     const Navigation = useNavigation<any>()
-    function gotobusinessdetails() {
-        Navigation.navigate('BusinessDetails')
+    function gotobusinessdetails(user_id:any) {
+        Navigation.navigate('BusinessDetails',user_id)
     }
     function gotopostjobs() {
         Navigation.navigate('PostJobs')
     }
+    const [formData, setFormData] = useState<userValue>({
+        user_id: "",
+        user_type: ""
+    })
+
+    useEffect(() => {
+        (async () => {
+
+            setUser(await getUser())
+
+            let response = await fetch(BASE_URL + "jobbid", {
+                method: "POST",
+                body: JSON.stringify({ ...formData, user_id: String(user?.userId) as any, user_type: String(user?.userType) }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            let json = await response.json()
+
+
+            if (json.status === "success") {
+
+                const shortListed = "Short Listed";
+                const filteredData = [];
+
+
+                for (const item of json.result) {
+                    if (item.bidding_status === shortListed) {
+                        // If the status matches, add the item to the filteredData array
+                        filteredData.push(item);
+                    }
+                }
+
+                setgetPendingreviewList(filteredData)
+
+
+
+            } else {
+
+
+            }
+
+        })();
+
+    }, []);
+
     const platform = Platform.OS
     return (
         <SafeAreaView style={styles.bgsec}>
         <ScrollView showsVerticalScrollIndicator={false}>
             <View style={styles.fullsectionjoblisst}>
-                <View style={styles.jobslistcard}>
-                    <View style={styles.padf}>
-                        <View style={styles.serviceflex}>
-                            <Image source={require('../../../assets/images/flx1.png')} style={styles.cardxi} />
-                      
-                            <View style={styles.textsr}>
-                                <Text style={styles.headingjobs} numberOfLines={1}>
-                                Expert Shopify Redesign
-                                </Text>
-                                <Text style={styles.parajobs}>
-                                    Bid amount ($)  <Text style={styles.comoncl}>$20500.00</Text>
-                                </Text>
-                                <Text style={styles.parajobs}>
-                                    Date  <Text style={styles.comoncl}>21 jun 2023</Text>
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
-                    <ImageBackground source={Background} resizeMode="cover" style={styles.imagex}>
-                        <View style={styles.optionviewsection}>
-                            <View style={styles.srdf}>
-                                <Text style={styles.srdpending}>Selected</Text>
-                            </View>
-                            <View style={styles.srdf}>
-                            <TouchableOpacity onPress={gotobusinessdetails} activeOpacity={0.9}>
-                                <View style={styles.viewjobsedit}>
-                                <Text style={styles.viewjobsedittext}>
-                                Business Details
-                                </Text>
+                
+                {
+                        getPendingreviewList?.map(function (item: PendingReviewdList, index: number) {
+                            return (
+
+                                <View style={styles.jobslistcard}>
+                                <View style={styles.padf}>
+                                    <View style={styles.serviceflex}>
+                                        <Image source={{uri:item.profilePic}} style={styles.cardxi} />
+                                  
+                                        <View style={styles.textsr}>
+                                            <Text style={styles.headingjobs} numberOfLines={1}>
+                                           <HTML source={{ html: item.post_title }} />
+                                            </Text>
+                                            <Text style={styles.parajobs}>
+                                                Bid amount ($)  <Text style={styles.comoncl}>{item.bid_amount}</Text>
+                                            </Text>
+                                            <Text style={styles.parajobs}>
+                                                Date  <Text style={styles.comoncl}>{item.created_date}</Text>
+                                            </Text>
+                                        </View>
+                                    </View>
                                 </View>
-                                </TouchableOpacity>
+                                <ImageBackground source={Background} resizeMode="cover" style={styles.imagex}>
+                                    <View style={styles.optionviewsection}>
+                                        <View style={styles.srdf}>
+                                            <Text style={styles.srdpending}>Selected</Text>
+                                        </View>
+                                        <View style={styles.srdf}>
+                                        <TouchableOpacity onPress={() => gotobusinessdetails(item.user_id)} activeOpacity={0.9}>
+                                            <View style={styles.viewjobsedit}>
+                                            <Text style={styles.viewjobsedittext}>
+                                            Business Details
+                                            </Text>
+                                            </View>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                </ImageBackground>
                             </View>
-                        </View>
-                    </ImageBackground>
-                </View>
-                <View style={styles.jobslistcard}>
-                    <View style={styles.padf}>
-                        <View style={styles.serviceflex}>
-                            <Image source={require('../../../assets/images/freelancers3.jpg')} style={styles.cardxi} />
-                            <View style={styles.textsr}>
-                                <Text style={styles.headingjobs}>
-                                    make a offline POS software
-                                </Text>
-                                <Text style={styles.parajobs}>
-                                    Bid amount ($)  <Text style={styles.comoncl}>$20500.00</Text>
-                                </Text>
-                                <Text style={styles.parajobs}>
-                                    Date  <Text style={styles.comoncl}>21 jun 2023</Text>
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
-                    <ImageBackground source={Background} resizeMode="cover" style={styles.imagex}>
-                    <View style={styles.optionviewsection}>
-                            <View style={styles.srdf}>
-                                <Text style={styles.srdpending}>Selected</Text>
-                            </View>
-                            <View style={styles.srdf}>
-                            <TouchableOpacity onPress={gotobusinessdetails} activeOpacity={0.9}>
-                                <View style={styles.viewjobsedit}>
-                                <Text style={styles.viewjobsedittext}>
-                                Business Details
-                                </Text>
-                                </View>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </ImageBackground>
-                </View>
-                <View style={styles.jobslistcard}>
-                    <View style={styles.padf}>
-                        <View style={styles.serviceflex}>
-                            <Image source={require('../../../assets/images/freelancers4.jpg')} style={styles.cardxi} />
-                            <View style={styles.textsr}>
-                                <Text style={styles.headingjobs}>
-                                Make a offline pOS software
-                                </Text>
-                                <Text style={styles.parajobs}>
-                                    Bid amount ($)  <Text style={styles.comoncl}>$20500.00</Text>
-                                </Text>
-                                <Text style={styles.parajobs}>
-                                    Date  <Text style={styles.comoncl}>21 jun 2023</Text>
-                                </Text>
-                            </View>
-                        </View>
-                        <View style={styles.pargrup}>
-                            <Text style={styles.pendingsection}>In publishing and graphic design, Lorem ipsum is a
-                                    placeholder text commonly used to demonstrate the
-                                    visual form of a document or a typeface without
-                                    relying on meaningful content.</Text>
-                        </View>
-                    </View>
-                    <ImageBackground source={Background} resizeMode="cover" style={styles.imagex}>
-                    <View style={styles.optionviewsection}>
-                            <View style={styles.srdf}>
-                                <Text style={styles.srdpending}>Selected</Text>
-                            </View>
-                            <View style={styles.srdf}>
-                            <TouchableOpacity onPress={gotobusinessdetails} activeOpacity={0.9}>
-                                <View style={styles.viewjobsedit}>
-                                <Text style={styles.viewjobsedittext}>
-                                Business Details
-                                </Text>
-                                </View>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </ImageBackground>
-                </View>
+                            )
+                        })
+                    }
+
             </View>
         </ScrollView>
     </SafeAreaView>
@@ -319,14 +310,17 @@ marginBottom:120,
         fontWeight: '500',
         marginBottom: 4,
         width:210,
+        fontFamily: "Inter-Medium",
     },
     parajobs: {
         color: '#909090',
         fontSize: 12,
         marginBottom: 4,
+        fontFamily: "Inter-Medium",
     },
     pendingsection:{
     fontSize:12,
     lineHeight:18,
+    fontFamily: "Inter-Medium",
         },
 });
